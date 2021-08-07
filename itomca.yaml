@@ -1,0 +1,43 @@
+- name: installing tomcat
+  become: yes
+  hosts: bharath
+  vars_files:
+    - vars/tomcat_ubuntu_vars.yaml 
+  tasks:
+    - name: installing java
+      package:
+        name: openjdk-8-jdk
+        update_cache: yes
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: create user tomcat
+      user:
+        name: tomcat
+        createhome: yes
+        group: tomcat
+        home: "{{ tomcat_install_path }}"
+        shell: /bin/false
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: unzip tomcat
+      package:
+        name: wget
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: downloading tomcat
+      get_url:
+        url: "{{ tomcat_download_source }}"
+        dest: "{{ tomcat_download_location }}"
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: unziping the tomcat
+      unarchive:
+        src: "{{ tomcat_download_location }}"
+        dest: "{{ tomcat_install_path }}"
+      when: ansible_facts['distribution'] == "Ubuntu" 
+
+
+
+
+
+
+
